@@ -48,7 +48,7 @@ class Database
 
     public void CreatePlayer()
     {
-        int uniqueNumber = AssignUniqueNumber();
+        int uniqueNumber = AssignOrdinalNumber();
         int parseLevel = 0;
 
         Console.Write("Введите имя игрока: ");
@@ -79,7 +79,7 @@ class Database
 
         int uniqueNumber = VerificationNumber();
         bool isBanned = false;
-        SearchByUniqueNumberForBan(uniqueNumber, isBanned);
+        SearchByUniqueNumberForAntiBan(uniqueNumber, isBanned);
 
         Console.Clear();
         Console.WriteLine("Игрок разабанен!");
@@ -112,6 +112,17 @@ class Database
         }
     }
 
+    private void SearchByUniqueNumberForAntiBan(int number, bool isBanned)
+    {
+        foreach (Player player in _players)
+        {
+            if (player.UniqueNumber == number)
+            {
+                player.AntiBan(isBanned);
+            }
+        }
+    }
+
     private int VerificationNumber()
     {
         bool isNumberWork = true;
@@ -135,7 +146,7 @@ class Database
         return playerNumber;
     }
 
-    private int AssignUniqueNumber()
+    private int AssignOrdinalNumber()
     {
         Random random = new Random();
 
@@ -185,6 +196,11 @@ class Player
     }
 
     public void Ban(bool isBanned)
+    {
+        IsBanned = isBanned;
+    }
+
+    public void AntiBan(bool isBanned)
     {
         IsBanned = isBanned;
     }
