@@ -25,7 +25,7 @@ while (isWork)
             database.BanPlayer();
             break;
         case "3":
-            database.AntiBanPlayer();
+            database.UnbanPlayer();
             break;
         case "4":
             database.DeletePlayer();
@@ -48,14 +48,14 @@ class Database
 
     public void CreatePlayer()
     {
-        int uniqueNumber = AssignOrdinalNumber();
-        int parseLevel = 0;
+        Console.WriteLine("Придумайте уникальный номер:");
+        int uniqueNumber = AssignUniqueNumber();
 
         Console.Write("Введите имя игрока: ");
         string name = Console.ReadLine();
 
         Console.Write("\nВведите уровень игрока: ");
-        int level = VerificationNumber();
+        int level = GetNumber();
 
         _players.Add(new Player(uniqueNumber, name, level));
     }
@@ -64,32 +64,48 @@ class Database
     {
         Console.WriteLine("Введите уникальный номер игрока:");
 
-        int uniqueNumber = VerificationNumber();
-        bool isBanned = true;
-        SearchByUniqueNumberForBan(uniqueNumber, isBanned);
+        int uniqueNumber = GetNumber();
+        
+        foreach (Player player in _players)
+        {
+            if (player.UniqueNumber == uniqueNumber)
+            {
+                player.Ban();
+                Console.WriteLine("Игрок забанен!");
+            }
+            else
+            {
+                Console.WriteLine("Игрока с таким номером не существует!");
+            }
+        }
 
-        Console.Clear();
-        Console.WriteLine("Игрок забанен!");
-        Console.ReadKey();
+        
     }
 
-    public void AntiBanPlayer()
+    public void UnbanPlayer()
     {
         Console.WriteLine("Введите уникальный номер игрока:");
 
-        int uniqueNumber = VerificationNumber();
-        bool isBanned = false;
-        SearchByUniqueNumberForAntiBan(uniqueNumber, isBanned);
+        int uniqueNumber = GetNumber();
 
-        Console.Clear();
-        Console.WriteLine("Игрок разабанен!");
-        Console.ReadKey();
+        foreach (Player player in _players)
+        {
+            if (player.UniqueNumber == uniqueNumber)
+            {
+                player.Unban();
+                Console.WriteLine("Игрок забанен!");
+            }
+            else
+            {
+                Console.WriteLine("Игрока с таким номером не существует!");
+            }
+        }
     }
 
     public void DeletePlayer()
     {
         Console.WriteLine("Введите уникальный номер игрока для удаления:");
-        int uniqueNumber = VerificationNumber();
+        int uniqueNumber = GetNumber();
 
         foreach (Player player in _players)
         {
@@ -101,29 +117,8 @@ class Database
         }
     }
 
-    private void SearchByUniqueNumberForBan(int number, bool isBanned)
-    {
-        foreach (Player player in _players)
-        {
-            if (player.UniqueNumber == number)
-            {
-                player.Ban(isBanned);
-            }
-        }
-    }
 
-    private void SearchByUniqueNumberForAntiBan(int number, bool isBanned)
-    {
-        foreach (Player player in _players)
-        {
-            if (player.UniqueNumber == number)
-            {
-                player.AntiBan(isBanned);
-            }
-        }
-    }
-
-    private int VerificationNumber()
+    private int GetNumber()
     {
         bool isNumberWork = true;
         int playerNumber = 0;
@@ -146,13 +141,35 @@ class Database
         return playerNumber;
     }
 
-    private int AssignOrdinalNumber()
+    private int AssignUniqueNumber()
     {
-        Random random = new Random();
+        bool isNumberUnique = false;
+        int uniqueNumberPlayer = 0;
 
-        int randomNumber = random.Next(_players.Count, _players.Count + 1) + 1;
-        
-        return randomNumber;
+        while (isNumberUnique == false)
+        {
+            uniqueNumberPlayer = GetNumber();
+
+            if (_players.Count == 0)
+            {
+                isNumberUnique = true;
+            }
+
+            foreach (Player player in _players)
+            {
+                if (player.UniqueNumber == uniqueNumberPlayer)
+                {
+                    Console.WriteLine("Такой номер занят! Попробуйте снова.");
+                }
+                else
+                {
+                    Console.WriteLine("Номер записан!");
+                    isNumberUnique = true;
+                }
+            }
+        }
+
+        return uniqueNumberPlayer;
     }
 
     public void ShowInfoPlayers()
@@ -195,13 +212,13 @@ class Player
         Console.WriteLine($"Уникальный номер: {UniqueNumber} | Никнейм: {NickName} | ур.{Level} | {isBannedComment}");
     }
 
-    public void Ban(bool isBanned)
+    public void Ban()
     {
-        IsBanned = isBanned;
+        IsBanned = true;
     }
 
-    public void AntiBan(bool isBanned)
+    public void Unban()
     {
-        IsBanned = isBanned;
+        IsBanned = false;
     }
 }
