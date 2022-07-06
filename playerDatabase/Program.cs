@@ -45,6 +45,7 @@ while (isWork)
 class Database
 {
     private List<Player> _players = new List<Player>();
+    private Player _player;
 
     public void CreatePlayer()
     {
@@ -62,43 +63,43 @@ class Database
 
     public void BanPlayer()
     {
+        bool wasPlayerReceived;
+
         Console.WriteLine("Введите уникальный номер игрока:");
 
         int uniqueNumber = GetNumber();
-        
-        foreach (Player player in _players)
-        {
-            if (player.UniqueNumber == uniqueNumber)
-            {
-                player.Ban();
-                Console.WriteLine("Игрок забанен!");
-            }
-            else
-            {
-                Console.WriteLine("Игрока с таким номером не существует!");
-            }
-        }
 
-        
+        wasPlayerReceived = TryGetPlayer(out _player, uniqueNumber);
+
+        if (wasPlayerReceived == true)
+        {
+            _player.Ban();
+            Console.WriteLine("Игрок забанен!");
+        }
+        else
+        {
+            Console.WriteLine("Игрок с таким id не найден.");
+        }
     }
 
     public void UnbanPlayer()
     {
+        bool wasPlayerReceived;
+
         Console.WriteLine("Введите уникальный номер игрока:");
 
         int uniqueNumber = GetNumber();
 
-        foreach (Player player in _players)
+        wasPlayerReceived = TryGetPlayer(out _player, uniqueNumber);
+
+        if (wasPlayerReceived == true)
         {
-            if (player.UniqueNumber == uniqueNumber)
-            {
-                player.Unban();
-                Console.WriteLine("Игрок забанен!");
-            }
-            else
-            {
-                Console.WriteLine("Игрока с таким номером не существует!");
-            }
+            _player.Unban();
+            Console.WriteLine("Игрок забанен!");
+        }
+        else
+        {
+            Console.WriteLine("Игрок с таким id не найден.");
         }
     }
 
@@ -117,6 +118,13 @@ class Database
         }
     }
 
+    public void ShowInfoPlayers()
+    {
+        foreach (Player player in _players)
+        {
+            player.ShowInfo();
+        }
+    }
 
     private int GetNumber()
     {
@@ -172,13 +180,21 @@ class Database
         return uniqueNumberPlayer;
     }
 
-    public void ShowInfoPlayers()
+    private bool TryGetPlayer(out Player player, int uniqueNumber)
     {
-        foreach (Player player in _players)
+        player = null;
+
+        foreach(Player player1 in _players)
         {
-            player.ShowInfo();
+            if (uniqueNumber == player1.UniqueNumber)
+            {
+                player = player1;
+                return true;
+            }
         }
+        return false;
     }
+
 }
 
 class Player
