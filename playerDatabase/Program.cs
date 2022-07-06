@@ -194,7 +194,6 @@ class Database
         }
         return false;
     }
-
 }
 
 class Player
